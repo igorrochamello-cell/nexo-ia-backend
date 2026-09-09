@@ -1,0 +1,78 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Production
+/dist
+/build
+/.next
+/out
+
+# Caches
+.cache/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Testing
+/coverage
+
+# Temp files
+*.tmp
+*.temp
+*.bak
+~$*
+
+# Windows
+.VS/
+$RECYCLE.BIN/
+.TemporaryItems/
+.Trashes/
+
+# macOS
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Temporaries/
+
+# Linux
+.directory
+
+# Git
+.git/
+.gitkeep
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
