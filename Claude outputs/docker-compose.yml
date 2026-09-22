@@ -1,0 +1,85 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: pipenexo-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pipenexo
+      # Performance tuning for development
+      POSTGRES_INITDB_ARGS: >
+        -c max_connections=100
+        -c shared_buffers=256MB
+        -c effective_cache_size=1GB
+        -c maintenance_work_mem=64MB
+        -c checkpoint_completion_target=0.9
+        -c wal_buffers=16MB
+        -c default_statistics_target=100
+        -c random_page_cost=1.1
+        -c effective_io_concurrency=200
+        -c work_mem=4MB
+        -c min_wal_size=2GB
+        -c max_wal_size=4GB
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pipenexo-network
+    restart: unless-stopped
+
+  # Optional: pgAdmin for database management (Web UI)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pipenexo-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pipenexo.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      SCRIPT_NAME: /pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pipenexo-network
+    restart: unless-stopped
+
+  # Optional: Redis for caching/sessions (if needed later)
+  redis:
+    image: redis:7-alpine
+    container_name: pipenexo-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pipenexo-network
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  pipenexo-network:
+    driver: bridge

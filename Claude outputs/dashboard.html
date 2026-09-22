@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - PipeNexo CRM</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .header-left h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .header-left p {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-info {
+      text-align: right;
+      font-size: 14px;
+    }
+
+    .user-info p:first-child {
+      color: #666;
+      font-weight: 600;
+    }
+
+    .user-info p:last-child {
+      color: #999;
+      font-size: 12px;
+    }
+
+    .logout-btn {
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: #eee;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .metric-card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-left: 4px solid #667eea;
+    }
+
+    .metric-card.warning {
+      border-left-color: #ffa500;
+    }
+
+    .metric-card.danger {
+      border-left-color: #ff6b6b;
+    }
+
+    .metric-card.success {
+      border-left-color: #51cf66;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #333;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .metric-detail {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 24px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-tabs button {
+      flex: 1;
+      padding: 16px 24px;
+      border: none;
+      background: white;
+      color: #666;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      border-bottom: 3px solid transparent;
+    }
+
+    .nav-tabs button:hover {
+      background: #f9f9f9;
+    }
+
+    .nav-tabs button.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      background: #f9f9f9;
+    }
+
+    .section {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .data-table th {
+      background: #f9f9f9;
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      font-weight: 600;
+      color: #666;
+    }
+
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .data-table tr:hover {
+      background: #f9f9f9;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge.active {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .badge.pending {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .badge.completed {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-state h3 {
+      margin-bottom: 8px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <h1>Dashboard</h1>
+        <p id="lastUpdate">Últimos dados carregados...</p>
+      </div>
+      <div class="header-right">
+        <div class="user-info">
+          <p id="userName">Carregando...</p>
+          <p id="userEmail">-</p>
+        </div>
+        <button class="logout-btn" onclick="logout()">Sair</button>
+      </div>
+    </div>
+
+    <div id="errorMessage" class="error" style="display: none;"></div>
+
+    <div id="metricsLoading" class="loading">Carregando métricas...</div>
+    <div id="metricsGrid" class="metrics-grid" style="display: none;">
+      <!-- Metrics will be inserted here -->
+    </div>
+
+    <div class="nav-tabs">
+      <button class="active" onclick="switchTab('overview')">Visão Geral</button>
+      <button onclick="switchTab('clients')">Clientes</button>
+      <button onclick="switchTab('policies')">Apólices</button>
+      <button onclick="switchTab('deals')">Negócios</button>
+      <button onclick="switchTab('renewals')">Renovações</button>
+    </div>
+
+    <div id="overview" class="section active">
+      <h2>Visão Geral do Sistema</h2>
+      <div id="overviewContent" class="loading">Carregando...</div>
+    </div>
+
+    <div id="clients" class="section">
+      <h2>Clientes</h2>
+      <button class="btn btn-primary" onclick="showAddClientForm()">+ Novo Cliente</button>
+      <div id="clientsContent" class="loading" style="margin-top: 20px;">Carregando...</div>
+    </div>
+
+    <div id="policies" class="section">
+      <h2>Apólices</h2>
+      <button class="btn btn-primary" onclick="showAddPolicyForm()">+ Nova Apólice</button>
+      <div id="policiesContent" class="loading" style="margin-top: 20px;">Carregando...</div>
+    </div>
+
+    <div id="deals" class="section">
+      <h2>Negócios</h2>
+      <button class="btn btn-primary" onclick="showAddDealForm()">+ Novo Negócio</button>
+      <div id="dealsContent" class="loading" style="margin-top: 20px;">Carregando...</div>
+    </div>
+
+    <div id="renewals" class="section">
+      <h2>Renovações</h2>
+      <div id="renewalsContent" class="loading">Carregando...</div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const api = new ApiService();
+
+    // Check authentication
+    if (!api.isAuthenticated()) {
+      window.location.href = '/login.html';
+    }
+
+    // Load user info
+    function loadUserInfo() {
+      const email = localStorage.getItem('userEmail') || 'Usuário';
+      document.getElementById('userName').textContent = email.split('@')[0].toUpperCase();
+      document.getElementById('userEmail').textContent = email;
+    }
+
+    // Load metrics
+    async function loadMetrics() {
+      try {
+        const data = await api.getDashboardMetrics();
+        displayMetrics(data);
+        document.getElementById('metricsLoading').style.display = 'none';
+        document.getElementById('metricsGrid').style.display = 'grid';
+        document.getElementById('lastUpdate').textContent = `Última atualização: ${new Date().toLocaleTimeString('pt-BR')}`;
+      } catch (error) {
+        showError('Erro ao carregar métricas: ' + error.message);
+      }
+    }
+
+    function displayMetrics(data) {
+      const metrics = [
+        {
+          label: 'Total de Clientes',
+          value: data.overview?.totalClients || 0,
+          icon: '👥',
+          detail: `${data.overview?.activeClients || 0} ativos`,
+          type: 'success'
+        },
+        {
+          label: 'Apólices Ativas',
+          value: data.overview?.activePolicies || 0,
+          icon: '📋',
+          detail: `Total: ${data.overview?.totalPolicies || 0}`,
+          type: 'default'
+        },
+        {
+          label: 'Sinistros Abertos',
+          value: data.overview?.openClaims || 0,
+          icon: '⚠️',
+          detail: `Total: ${data.overview?.totalClaims || 0}`,
+          type: data.overview?.openClaims > 5 ? 'warning' : 'default'
+        },
+        {
+          label: 'Negócios Abertos',
+          value: data.pipeline?.openDeals || 0,
+          icon: '💼',
+          detail: `Valor: R$ ${(data.pipeline?.totalValue || 0).toLocaleString('pt-BR')}`,
+          type: 'default'
+        },
+        {
+          label: 'Renovações Pendentes',
+          value: data.overview?.pendingRenewals || 0,
+          icon: '🔄',
+          detail: `Total: ${data.overview?.totalRenewals || 0}`,
+          type: data.overview?.pendingRenewals > 10 ? 'warning' : 'default'
+        },
+        {
+          label: 'Tarefas Abertas',
+          value: data.tasks?.openTasks || 0,
+          icon: '✓',
+          detail: 'Aguardando ação',
+          type: 'default'
+        }
+      ];
+
+      const grid = document.getElementById('metricsGrid');
+      grid.innerHTML = metrics.map(m => `
+        <div class="metric-card ${m.type}">
+          <div style="font-size: 24px; margin-bottom: 8px;">${m.icon}</div>
+          <div class="metric-label">${m.label}</div>
+          <div class="metric-value">${m.value}</div>
+          <div class="metric-detail">${m.detail}</div>
+        </div>
+      `).join('');
+    }
+
+    // Tab switching
+    function switchTab(tab) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+
+      document.getElementById(tab).classList.add('active');
+      event.target.classList.add('active');
+
+      if (tab === 'clients') loadClients();
+      else if (tab === 'policies') loadPolicies();
+      else if (tab === 'deals') loadDeals();
+      else if (tab === 'renewals') loadRenewals();
+    }
+
+    async function loadClients() {
+      try {
+        const response = await api.getClients(1, 20);
+        const content = document.getElementById('clientsContent');
+
+        if (!response.data || response.data.length === 0) {
+          content.innerHTML = `
+            <div class="empty-state">
+              <h3>Nenhum cliente cadastrado</h3>
+              <p>Clique em "+ Novo Cliente" para adicionar o primeiro cliente</p>
+            </div>
+          `;
+          return;
+        }
+
+        const html = `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${response.data.map(c => `
+                <tr>
+                  <td>${c.nomeCompleto}</td>
+                  <td>${c.email}</td>
+                  <td>${c.telefone}</td>
+                  <td><span class="badge active">${c.statusRelacionamento}</span></td>
+                  <td>
+                    <div class="action-buttons">
+                      <button class="btn btn-secondary" onclick="editClient('${c.id}')">Editar</button>
+                      <button class="btn btn-secondary" onclick="deleteClient('${c.id}')">Deletar</button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        content.innerHTML = html;
+      } catch (error) {
+        showError('Erro ao carregar clientes: ' + error.message);
+      }
+    }
+
+    async function loadPolicies() {
+      try {
+        const response = await api.getPolicies(1, 20);
+        const content = document.getElementById('policiesContent');
+
+        if (!response.data || response.data.length === 0) {
+          content.innerHTML = `
+            <div class="empty-state">
+              <h3>Nenhuma apólice cadastrada</h3>
+              <p>Clique em "+ Nova Apólice" para adicionar a primeira apólice</p>
+            </div>
+          `;
+          return;
+        }
+
+        const html = `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Número</th>
+                <th>Cliente</th>
+                <th>Status</th>
+                <th>Prêmio</th>
+                <th>Vigência Fim</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${response.data.map(p => `
+                <tr>
+                  <td>${p.numeroApolice}</td>
+                  <td>${p.clientId}</td>
+                  <td><span class="badge active">${p.status}</span></td>
+                  <td>R$ ${(p.premioTotal || 0).toLocaleString('pt-BR')}</td>
+                  <td>${new Date(p.vigenciaFim).toLocaleDateString('pt-BR')}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        content.innerHTML = html;
+      } catch (error) {
+        showError('Erro ao carregar apólices: ' + error.message);
+      }
+    }
+
+    async function loadDeals() {
+      try {
+        const response = await api.getDeals(1, 20);
+        const content = document.getElementById('dealsContent');
+
+        if (!response.data || response.data.length === 0) {
+          content.innerHTML = `
+            <div class="empty-state">
+              <h3>Nenhum negócio cadastrado</h3>
+              <p>Clique em "+ Novo Negócio" para adicionar o primeiro negócio</p>
+            </div>
+          `;
+          return;
+        }
+
+        const html = `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Cliente</th>
+                <th>Status</th>
+                <th>Valor</th>
+                <th>Probabilidade</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${response.data.map(d => `
+                <tr>
+                  <td>${d.titulo}</td>
+                  <td>${d.clientId}</td>
+                  <td><span class="badge pending">${d.statusNegocio}</span></td>
+                  <td>R$ ${(d.valorEstimado || 0).toLocaleString('pt-BR')}</td>
+                  <td>${d.probabilidadeVitoria}%</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        content.innerHTML = html;
+      } catch (error) {
+        showError('Erro ao carregar negócios: ' + error.message);
+      }
+    }
+
+    async function loadRenewals() {
+      try {
+        const response = await api.getRenewals(1, 20);
+        const content = document.getElementById('renewalsContent');
+
+        if (!response.data || response.data.length === 0) {
+          content.innerHTML = `
+            <div class="empty-state">
+              <h3>Nenhuma renovação cadastrada</h3>
+              <p>As renovações são criadas automaticamente quando apólices estão próximas do vencimento</p>
+            </div>
+          `;
+          return;
+        }
+
+        const html = `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Número</th>
+                <th>Apólice</th>
+                <th>Status</th>
+                <th>Vencimento Original</th>
+                <th>Prêmio Anterior</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${response.data.map(r => `
+                <tr>
+                  <td>${r.numeroRenovacao}</td>
+                  <td>${r.policyId}</td>
+                  <td><span class="badge pending">${r.status}</span></td>
+                  <td>${new Date(r.dataVencimentoOriginal).toLocaleDateString('pt-BR')}</td>
+                  <td>R$ ${(r.premioAnterior || 0).toLocaleString('pt-BR')}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        content.innerHTML = html;
+      } catch (error) {
+        showError('Erro ao carregar renovações: ' + error.message);
+      }
+    }
+
+    // Placeholder functions for add/edit/delete
+    function showAddClientForm() {
+      alert('Formulário de novo cliente (será implementado com modal)');
+    }
+
+    function showAddPolicyForm() {
+      alert('Formulário de nova apólice (será implementado com modal)');
+    }
+
+    function showAddDealForm() {
+      alert('Formulário de novo negócio (será implementado com modal)');
+    }
+
+    function editClient(id) {
+      alert('Editar cliente ' + id + ' (será implementado)');
+    }
+
+    async function deleteClient(id) {
+      if (confirm('Tem certeza que deseja deletar este cliente?')) {
+        try {
+          await api.deleteClient(id);
+          loadClients();
+        } catch (error) {
+          showError('Erro ao deletar cliente: ' + error.message);
+        }
+      }
+    }
+
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    function logout() {
+      api.logout();
+      window.location.href = '/login.html';
+    }
+
+    // Initialize
+    loadUserInfo();
+    loadMetrics();
+  </script>
+</body>
+</html>
