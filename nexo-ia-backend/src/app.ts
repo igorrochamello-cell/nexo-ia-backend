@@ -42,3 +42,7 @@ export function createApp() {
 
   return app;
 }
+
+// Criar e exportar a aplicação como default para Vercel
+const app = createApp();
+export default app;
